@@ -2,11 +2,18 @@ version: '3'
 
 services:
   app:
+    container_name: app
     image: docker-logs-elk/dummy-app:1.0.0
     build:
       context: dummy-app
       dockerfile: Dockerfile
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10" 
   filebeat:
+    container_name: filebeat 
     hostname: filebeat
     image: docker-logs-elk/filebeat:1.0.0
     build:
@@ -19,7 +26,13 @@ services:
      - "/var/run/docker.sock:/var/run/docker.sock"
     links:
        - logstash
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
   kibana:
+    container_name: kibana 
     image: kibana:6.5.2
     environment:
       - "LOGGING_QUIET=true"
@@ -27,7 +40,13 @@ services:
       - elasticsearch
     ports:
       - 5601:5601
-  logstash: 
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
+  logstash:  
+    container_name: logstash 
     hostname: logstash 
     image: docker-logs-elk/logstash:1.0.0
     build:
@@ -39,7 +58,13 @@ services:
       LOG_LEVEL: error
     links:
       - elasticsearch
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
   elasticsearch:
+    container_name: elasticsearch 
     hostname: elasticsearch
     image: docker-logs-elk/elasticsearch:1.0.0
     build:
@@ -55,3 +80,8 @@ services:
         hard: -1
     ports:
       - 9200:9200
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
